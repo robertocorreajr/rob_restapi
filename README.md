@@ -17,22 +17,3 @@ Como é um exemplo bem simples eu resolvi "soldar" no código os 2 primeiros liv
 | "/api/books/{id}" | DELETE | Deletar um livro |
 
 > OBS: Se alguém está vendo essa documentação e sabe uma forma melhor de documentar (dicas) por favor me diga. Ainda sou novo nessa área e toda ajuda é bem vinda. :)  
-
-
-
-zero log
-https://pkg.go.dev/github.com/rs/zerolog
-
-retirar o ponteiro de autores
-executar update sem alterar o array
-proteger as operações do slice com mutex - 
-
-pm.test("Status code is 200", function () {
-    pm.response.to.have.status(200);
-});
-
-var jsonData = pm.response.json();
-pm.test("Ensure Result", function () {
-    pm.expect(jsonData.Total).to.eql(1);
-    pm.expect(jsonData.Nfes[0].AccessKey).to.eql("35200472381189001001550010018766061478420160");
-});
