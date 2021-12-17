@@ -2,20 +2,23 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/gorilla/mux"
 )
 
+// TODO: Retirar o ponteiro dos autores. DONE!
+
 // Book Struct (Model)
 type Book struct {
-	ID     string  `json:"id"`
-	Isbn   string  `json:"isbn"`
-	Title  string  `json:"title"`
-	Author *Author `json:"author"`
+	ID     string `json:"id"`
+	Isbn   string `json:"isbn"`
+	Title  string `json:"title"`
+	Author Author `json:"author"`
 }
 
 // Author Struct
@@ -26,6 +29,8 @@ type Author struct {
 
 // Init books var as slice Book struct
 var books []Book
+var newId = 3
+var mu sync.Mutex
 
 // Get All Books
 func getBooks(w http.ResponseWriter, r *http.Request) {
@@ -48,15 +53,21 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// TODO: criar contador + 1 para novos livros DONE!
+
 // Create a New Book
 func createBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var book Book
 	_ = json.NewDecoder(r.Body).Decode(&book)
-	book.ID = strconv.Itoa(rand.Intn(10000000)) // Mock ID - not safe
+	book.ID = strconv.Itoa(newId) //strconv.Itoa(rand.Intn(10000000)) // Mock ID
 	books = append(books, book)
 	json.NewEncoder(w).Encode(book)
+	newId++
 }
+
+// TODO: proteger as operações do slice com mutex DONE!
+// TODO: executar update sem alterar o array DONE!
 
 // Update a Book
 func updateBook(w http.ResponseWriter, r *http.Request) {
@@ -64,17 +75,18 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	for index, item := range books {
 		if item.ID == params["id"] {
-			books = append(books[:index], books[index+1:]...)
+			mu.Lock()
 			var book Book
 			_ = json.NewDecoder(r.Body).Decode(&book)
 			book.ID = params["id"]
-			books = append(books, book)
+			fmt.Println(book)
+			books[index] = book
 			json.NewEncoder(w).Encode(book)
+			mu.Unlock()
 			return
 		}
 	}
 	json.NewEncoder(w).Encode(books)
-
 }
 
 // Delete a Book
@@ -95,8 +107,8 @@ func main() {
 	r := mux.NewRouter()
 
 	// Mock Data - @todo - implement DB
-	books = append(books, Book{ID: "1", Isbn: "448743", Title: "Goland Book", Author: &Author{Firstname: "Jhon", Lastname: "Doe"}})
-	books = append(books, Book{ID: "2", Isbn: "654942", Title: "Book Two", Author: &Author{Firstname: "Steve", Lastname: "Smith"}})
+	books = append(books, Book{ID: "1", Isbn: "448743", Title: "Goland Book", Author: Author{Firstname: "Jhon", Lastname: "Doe"}})
+	books = append(books, Book{ID: "2", Isbn: "654942", Title: "Book Two", Author: Author{Firstname: "Steve", Lastname: "Smith"}})
 
 	// Route Handlers / Endpoints
 	r.HandleFunc("/api/books", getBooks).Methods("GET")
