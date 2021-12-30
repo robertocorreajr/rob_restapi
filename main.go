@@ -45,13 +45,13 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 
 	// Loop through books and find with id
 	mu.Lock()
+	defer mu.Unlock()
 	for _, book := range books {
 		if book.ID == params["id"] {
 			json.NewEncoder(w).Encode(book)
-			// return
+			return
 		}
 	}
-	mu.Unlock()
 	// json.NewEncoder(w).Encode(&Book{})
 
 }
@@ -77,15 +77,15 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	mu.Lock()
+	defer mu.Unlock()
 	for index, book := range books {
 		if book.ID == params["id"] {
 			_ = json.NewDecoder(r.Body).Decode(&book)
 			books[index] = book
 			json.NewEncoder(w).Encode(book)
-			// return
+			return
 		}
 	}
-	mu.Unlock()
 	// json.NewEncoder(w).Encode(books)
 }
 
@@ -95,15 +95,15 @@ func deleteBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	mu.Lock()
+	defer mu.Unlock()
 	for index, book := range books {
 		if book.ID == params["id"] {
 			books = append(books[:index], books[index+1:]...)
 			fmt.Println(books)
 			json.NewEncoder(w).Encode(book)
-			// break
+			break
 		}
 	}
-	mu.Unlock()
 	// json.NewEncoder(w).Encode(books)
 }
 
