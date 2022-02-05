@@ -2,6 +2,8 @@ package entity
 
 import uuid "github.com/satori/go.uuid"
 
+// https://github.com/oklog/ulid
+
 type BookRepository interface {
 	Get(id string) (Book, error)
 	Add(book Book) (Book, error)
@@ -9,10 +11,10 @@ type BookRepository interface {
 
 // Book Struct (Model)
 type Book struct {
-	ID    string `json:"id"`
-	Isbn  string `json:"isbn"`
-	Title string `json:"title"`
-	Author
+	ID     string `json:"id"`
+	Isbn   string `json:"isbn"`
+	Title  string `json:"title"`
+	Author Author `json:"author"`
 }
 
 // Author Struct

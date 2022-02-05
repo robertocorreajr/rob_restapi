@@ -18,12 +18,15 @@ func (b *BookService) findById(id string) (entity.Book, error) {
 	return book, nil
 }
 
-func (b *BookService) Add(name string) (entity.Book, error) {
+func (b *BookService) Add(isbn, title, firstname, lastname string) (entity.Book, error) {
 	book := entity.NewBook()
-	book.Title = name
-	bok, err := b.Repository.Add(*book)
+	book.Isbn = isbn
+	book.Title = title
+	book.Author.Firstname = firstname
+	book.Author.Lastname = lastname
+	bk, err := b.Repository.Add(*book)
 	if err != nil {
 		return entity.Book{}, err
 	}
-	return bok, nil
+	return bk, nil
 }

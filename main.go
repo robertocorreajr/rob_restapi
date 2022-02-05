@@ -2,9 +2,15 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"os"
 	"rob_restapi/entity"
 	"rob_restapi/repository"
+	"rob_restapi/server"
 	"rob_restapi/service"
+
+	"github.com/joho/godotenv"
 )
 
 // func (b Book) Add() uint64 {
@@ -100,21 +106,36 @@ func main() {
 
 	service := service.NewBookService(repositoryMemory)
 
-	bok, _ := service.Add("Titulo")
+	bok, _ := service.Add("123", "title", "firstname", "lastname")
 	fmt.Println(bok)
+
+	var err error
+	var port string
+	if err = godotenv.Load(); err != nil {
+		log.Fatal(err)
+	}
+	port = os.Getenv("API_PORT")
+	if err != nil {
+		port = "8000"
+	}
+
+	port = ":" + port
+	fmt.Println(port)
 	// Init Router
 	// r := mux.NewRouter()
+	r := server.Router()
+	log.Fatal(http.ListenAndServe(port, r))
 
 	// // Mock Data - @todo - implement DB
 	// books = append(books, Book{ID: "1", Isbn: "448743", Title: "Goland Book", Author: Author{Firstname: "Jhon", Lastname: "Doe"}})
 	// books = append(books, Book{ID: "2", Isbn: "654942", Title: "Book Two", Author: Author{Firstname: "Steve", Lastname: "Smith"}})
 
 	// // Route Handlers / Endpoints / Concurrency Goroutines - This works here? I down't know =D
-	// go r.HandleFunc("/api/books", getBooks).Methods("GET")
-	// go r.HandleFunc("/api/books/{id}", getBook).Methods("GET")
-	// go r.HandleFunc("/api/books", createBook).Methods("POST")
-	// go r.HandleFunc("/api/books/{id}", updateBook).Methods("PUT")
-	// go r.HandleFunc("/api/books/{id}", deleteBook).Methods("DELETE")
+	// r.HandleFunc("/api/books", getBooks).Methods("GET")
+	// r.HandleFunc("/api/books/{id}", getBook).Methods("GET")
+	// r.HandleFunc("/api/books", createBook).Methods("POST")
+	// r.HandleFunc("/api/books/{id}", updateBook).Methods("PUT")
+	// r.HandleFunc("/api/books/{id}", deleteBook).Methods("DELETE")
 
 	// log.Fatal(http.ListenAndServe(":8000", r))
 }

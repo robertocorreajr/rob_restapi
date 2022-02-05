@@ -5,16 +5,14 @@ import (
 	"rob_restapi/entity"
 )
 
-type BookMemoryDb struct {
-	Books []entity.Book
-}
-
 type BookRepositoryMemory struct {
-	db BookMemoryDb
+	Books []entity.Book
+	// db BookMemoryDb
 }
 
-func NewBookRepositoryMemory(db BookMemoryDb) *BookRepositoryMemory {
-	return &BookRepositoryMemory{db: db}
+func NewBookRepositoryMemory() entity.BookRepository {
+	//TODO não receber nada na execução da função e criar o slice dentro da função.
+	return &BookRepositoryMemory{Books: make([]entity.Book, 0)}
 }
 
 func (c *BookRepositoryMemory) Get(id string) (entity.Book, error) {
